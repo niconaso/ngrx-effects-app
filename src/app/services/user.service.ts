@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user.model';
@@ -12,7 +13,7 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  getUsers(): Promise<User[]> {
+  getUsers(): Observable<User[]> {
     const url: string = `${environment.endpoint}/users`;
 
     let params: HttpParams = new HttpParams();
@@ -22,7 +23,19 @@ export class UserService {
       .get<User[]>(url, {
         params,
       })
-      .pipe(map((result: any) => result.data))
-      .toPromise();
+      .pipe(map((result: any) => result.data));
+  }
+
+  getUser(id: string): Observable<User> {
+    const url: string = `${environment.endpoint}/users/${id}`;
+
+    let params: HttpParams = new HttpParams();
+    params = params.set('per_page', String(UserService.PER_PAGE));
+
+    return this.http
+      .get<User>(url, {
+        params,
+      })
+      .pipe(map((result: any) => result.data));
   }
 }
